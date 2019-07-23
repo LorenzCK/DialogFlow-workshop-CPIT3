@@ -1,6 +1,5 @@
-Il mio bot DialogFlow
-=====================
+# DialogFlow workshop for Campus Party Italia 3
 
-Codice di esempio per il workshop **“Interfacce conversazionali, da ELIZA a DialogFlow”**
-(venerdì 26 luglio 2019, 11:00–12:00, Campus Party Italia 2019),
-tenuto da [Lorenz Cuno Klopfenstein](https://twitter.com/LorenzCK) di [DIGIT&nbsp;srl](http://digit.srl/) per conto del GDG&nbsp;Urbino.
+Sample code for the **“Interfacce conversazionali, da ELIZA a DialogFlow”** (i.e., “Conversational interfaces, from ELIZA to DialogFlow”) workshop: Friday 26th July 2019, 11:00–12:00.
+
+Workshop held by [Lorenz Cuno Klopfenstein](https://twitter.com/LorenzCK) from [DIGIT&nbsp;srl](http://digit.srl/) on behalf of GDG&nbsp;Urbino.
