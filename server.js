@@ -78,6 +78,10 @@ app.post('/webhook', (req, res) => {
   
   sessionData.lastCall = Date.now();
   sessions[sessionId] = sessionData;
+  
+  res.type('application/json').send({
+    'fulfillment_text': 'Questa è la risposta del bot'
+  });
 });
 
 // listen for requests :)
