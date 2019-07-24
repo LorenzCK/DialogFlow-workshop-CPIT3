@@ -49,8 +49,20 @@ function printPiadina(piadinaExpression) {
     
   const result = piadinaExpression.split('').map((c, index) => {
     const components = piadinaComponents[index];
-    return components[parseInt(c, 10) % components.length];
-  });
+    var cIndex = parseInt(c, 10);
+    
+    // If no valid character for first value, default to 1
+    if(isNaN(cIndex) && index == 0) {
+      cIndex = 1;
+    }
+    
+    // Return null for invalid characters, will get filtered by filter() below
+    if(isNaN(cIndex)) {
+      return null;
+    }
+    
+    return components[(cIndex - 1) % components.length];
+  }).filter(ele => ele != null);
   
   return 'Piadina ' + result[0] + ' con ' + result.slice(1, result.length - 1).join(', ') + ' e ' + result[result.length - 1];
 }
