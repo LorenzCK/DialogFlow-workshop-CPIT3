@@ -52,10 +52,19 @@ function printPiadina(piadinaExpression) {
 }
 
 app.get('/', (req, res) => {
-  res.type('text/plain').send(printPiadina('1234'));
+  res.type('text/plain').send('Hello piadina! 🌮');
 });
 
 app.post('/send', (req, res) => {
+app.get('/piadina/:code', (req, res) => {
+  if(!req.params.code || req.params.code.length != 4) {
+    res.status(400).send("Piadina code must be 4 characters long");
+  }
+  else {
+    res.type('text/plain').send(printPiadina(req.params.code));
+  }
+});
+
   console.log('Received text: ' + req.query.text);
   
   res.header('Access-Control-Allow-Origin', '*');
