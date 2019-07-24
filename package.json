@@ -12,7 +12,8 @@
   "dependencies": {
     "express": "^4.16.4",
     "dialogflow": "^0.10.3",
-    "body-parser": "^1.19.0"
+    "body-parser": "^1.19.0",
+    "uuid": "^3.3.2"
   },
   "engines": {
     "node": "8.x"

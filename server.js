@@ -4,6 +4,10 @@ const app = express();
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 
+const dialogflow = require('dialogflow');
+
+const uuidv4 = require('uuid/v4');
+
 var sessions = {};
 
 const piadinaTypes = [
@@ -55,7 +59,6 @@ app.get('/', (req, res) => {
   res.type('text/plain').send('Hello piadina! 🌮');
 });
 
-app.post('/send', (req, res) => {
 app.get('/piadina/:code', (req, res) => {
   if(!req.params.code || req.params.code.length != 4) {
     res.status(400).send("Piadina code must be 4 characters long");
@@ -65,16 +68,54 @@ app.get('/piadina/:code', (req, res) => {
   }
 });
 
+app.post('/send', async (req, res) => {
   console.log('Received text: ' + req.query.text);
+  
+  const sessionId = (req.query.sessionId && req.query.sessionId.match(/^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i)) ? req.query.sessionId : uuidv4();
+  console.log('Session ID: ' + sessionId);
   
   res.header('Access-Control-Allow-Origin', '*');
   
   const inputText = req.query.text;
   if(inputText) {
-    res.type('text/plain').send("Ciao Gianma, hai scritto: " + inputText + "!");
+    const sessionClient = new dialogflow.SessionsClient();
+    const sessionPath = sessionClient.sessionPath(process.env.GOOGLEFLOW_PROJECT_ID, sessionId);
+    
+    const request = {
+      session: sessionPath,
+      queryInput: {
+        text: {
+          text: inputText,
+          languageCode: 'it-IT',
+        },
+      },
+    };
+    
+    console.log('Detecting intent...');
+    
+    const responses = (await sessionClient.detectIntent(request)).filter(r => r != null);
+    console.log('Responses: ' + JSON.stringify(responses));
+    if(responses.length <= 0) {
+      res.status(500).type('text/plain').send("Whops, no DialogFlow responses");
+      return;
+    }
+    
+    const responseTexts = responses[0].queryResult.fulfillmentMessages.filter(ele => ele.platform == 'PLATFORM_UNSPECIFIED');
+    if(responseTexts.length <= 0) {
+      res.status(500).type('text/plain').send("Whops, no fulfillment messages");
+      return;
+    }
+    
+    const texts = responseTexts[0].text.text;
+    const pickedText = texts[Math.floor(Math.random() * texts.length)];
+
+    res.status(200).type('application/json').send({
+      sessionId: sessionId,
+      text: pickedText
+    });
   }
   else {
-    res.type('text/plain').send("Ciao Gianma!");
+    res.status(400).send('Text query string parameter needed');
   }
 });
 
