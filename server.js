@@ -32,7 +32,7 @@ const piadinaCondiment2 = [
   'fontina',
   'mozzarella',
   'stracchino',
-  'squaquerone'
+  'squacquerone'
 ];
 const piadinaCondiment3 = [
   'pomodoro',
