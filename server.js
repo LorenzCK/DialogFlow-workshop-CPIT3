@@ -91,6 +91,46 @@ function printPiadina(piadinaExpression) {
   return 'Piadina ' + result[0] + ' con ' + result.slice(1, result.length - 1).join(', ') + ' e ' + result[result.length - 1];
 }
 
+function processIntent(req, sessionData) {
+  if(req.body.queryResult.intent.name) {
+    switch(req.body.queryResult.intent.name) {
+      case 'projects/newagent-yoreuj/agent/intents/220a900f-2ddc-4be4-81fd-5c9b1770fb15':
+        // Genera piadina
+        do {
+          var p = newPiadina();
+        }
+        while(!isPiadinaCompatible(p, sessionData));
+        
+        sessionData.lastPiadina = p;
+          
+        return 'Che ne dici di questa: ' + printPiadina(p) + '?';
+        break;
+        
+      case 'projects/newagent-yoreuj/agent/intents/f81c8af0-d4d7-473c-a303-bee885ba1082':
+        // DoNotLike intent
+        if(req.body.queryResult.parameters.Condiment) {
+          const prohibitedCondiment = req.body.queryResult.parameters.Condiment;
+          sessionData.prohibit = prohibitedCondiment;
+          
+          return 'OK, niente ' + prohibitedCondiment + ' per te!';
+        }
+        else {
+          return 'Non ho capito cosa non ti piace.';
+        }
+        break;
+        
+      case 'projects/newagent-yoreuj/agent/intents/bcc775a0-3cbe-45ac-88fe-d83bacc646fd':
+        // Do like
+        return 'Benissimo, mi fa piacere! 👌';
+        break;
+        
+      case 'projects/newagent-yoreuj/agent/intents/fdfee888-c0b3-4dc8-808c-ab41938f7d41':
+        // Do not like
+        return 'Mi dispiace. 😔';
+    }
+  }
+}
+
 app.get('/', (req, res) => {
   res.type('text/plain').send('Hello piadina! 🌮');
 });
@@ -162,11 +202,14 @@ app.post('/webhook', (req, res) => {
   const sessionData = sessions[sessionId] || {};
   console.log('Session data: ' + JSON.stringify(sessionData));
   
+  const responseText = processIntent(req, sessionData);
+  console.log('Intent ' + req.body.queryResult.intent.name + ' => text: ' + responseText);
+  
   sessionData.lastCall = Date.now();
   sessions[sessionId] = sessionData;
   
   res.type('application/json').send({
-    'fulfillment_text': 'Questa è la risposta del bot'
+    'fulfillment_text': responseText
   });
 });
 
