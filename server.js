@@ -43,11 +43,20 @@ const piadinaCondiment3 = [
 ];
 const piadinaComponents = [ piadinaTypes, piadinaCondiment1, piadinaCondiment2, piadinaCondiment3 ];
 
-function printPiadina(piadinaExpression) {
+function newPiadina() {
+  var piadina = '';
+  for(var i = 0; i < 4; ++i) {
+    piadina += Math.floor(Math.random() * 9.0) + 1;
+  }
+  console.log('Piadina: ' + piadina);
+  return piadina;
+}
+
+function piadinaExpressionToComponents(piadinaExpression) {
   if(piadinaExpression.length != 4)
     throw "Piadina expression must have length 4";
-    
-  const result = piadinaExpression.split('').map((c, index) => {
+  
+  return piadinaExpression.split('').map((c, index) => {
     const components = piadinaComponents[index];
     var cIndex = parseInt(c, 10);
     
@@ -56,13 +65,28 @@ function printPiadina(piadinaExpression) {
       cIndex = 1;
     }
     
-    // Return null for invalid characters, will get filtered by filter() below
+    // Return null for invalid characters, will get eventually filtered
     if(isNaN(cIndex)) {
       return null;
     }
     
     return components[(cIndex - 1) % components.length];
-  }).filter(ele => ele != null);
+  });
+}
+
+function isPiadinaCompatible(piadinaExpression, sessionData) {
+  const components = piadinaExpressionToComponents(piadinaExpression);
+  console.log('Piadina ' + piadinaExpression + ' = components: ' + JSON.stringify(components));
+  
+  const result = !(components.some(ele => ele == sessionData.prohibit));
+  
+  console.log('Piadina ' + piadinaExpression + ' compatible: ' + result + ' with session data: ' + JSON.stringify(sessionData));
+  
+  return result;
+}
+
+function printPiadina(piadinaExpression) {
+  const result = piadinaExpressionToComponents(piadinaExpression).filter(ele => ele != null);
   
   return 'Piadina ' + result[0] + ' con ' + result.slice(1, result.length - 1).join(', ') + ' e ' + result[result.length - 1];
 }
